@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaifSat Core Player ⚡</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mux.js@latest/dist/mux.min.js"></script>
+    <script src="saifsat-player.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #0b0e14;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #ffd700;
+            margin-bottom: 4px;
+            font-size: 22px;
+            letter-spacing: 0.5px;
+        }
+        p {
+            color: #8b949e;
+            margin-top: 0;
+            font-size: 13px;
+        }
+        #player-container {
+            width: 100%;
+            max-width: 860px;
+            height: 480px;
+            border-radius: 12px;
+            border: 1px solid #232936;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            background: #000;
+            cursor: pointer;
+            position: relative;
+        }
+        .controls-bar {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 860px;
+            background: #151922;
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid #2d3342;
+            box-sizing: border-box;
+        }
+        .controls-group {
+            display: flex;
+            gap: 8px;
+        }
+        .ctrl-btn {
+            background: #212631;
+            color: #ffd700;
+            border: 1px solid #30363d;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .ctrl-btn:hover {
+            background: #ffd700;
+            color: #000;
+        }
+        .stream-input-group {
+            margin-top: 12px;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 860px;
+        }
+        input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #2d3342;
+            background: #151922;
+            color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+        input:focus {
+            border-color: #ffd700;
+        }
+        .play-btn {
+            padding: 10px 22px;
+            border-radius: 8px;
+            border: none;
+            background: #ffd700;
+            color: #000;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .play-btn:hover {
+            background: #e6c200;
+        }
+        .presets {
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+            max-width: 860px;
+            justify-content: center;
+        }
+        .preset-btn {
+            background: #151922;
+            color: #e6edf3;
+            border: 1px solid #30363d;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .preset-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+            background: #1c212c;
+        }
+        .saifsat-spinner {
+            width: 42px;
+            height: 42px;
+            border: 4px solid rgba(255, 215, 0, 0.15);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SaifSat Universal Player ⚡</h1>
+    <p>النواة الموحدة فائقة السرعة — كبح الذاكرة (Memory Cap) وتشغيل عتادي مباشر</p>
+
+    <div id="player-container" onclick="player.togglePlay()"></div>
+
+    <div class="controls-bar">
+        <div class="controls-group">
+            <button class="ctrl-btn" onclick="player.togglePlay()">⏯️ تشغيل / إيقاف</button>
+            <button class="ctrl-btn" id="mute-btn" onclick="toggleAudio()">🔊 الصوت</button>
+        </div>
+        <div class="controls-group">
+            <button class="ctrl-btn" onclick="player.toggleFullscreen()">⛶ ملء الشاشة</button>
+        </div>
+    </div>
+
+    <div class="stream-input-group">
+        <input type="text" id="stream-url" value="https://ireplay.tv/test/blender.m3u8" placeholder="ضع رابط البث المباشر...">
+        <button class="play-btn" onclick="playStream()">تشغيل البث</button>
+    </div>
+
+    <div class="presets">
+        <button class="preset-btn" onclick="loadPreset('https://ireplay.tv/test/blender.m3u8')">🔴 بث حي مستمر (Blender Live)</button>
+        <button class="preset-btn" onclick="loadPreset('https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8')">🎬 بث Tears of Steel HD</button>
+        <button class="preset-btn" onclick="loadPreset('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8')">⚡ بث Big Buck Bunny</button>
+        <button class="preset-btn" onclick="loadPreset('https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8')">🍏 بث اختبار Apple الرسمي</button>
+    </div>
+
+    <script>
+        const player = new SaifSatPlayer({
+            container: '#player-container',
+            lowLatency: true,
+            maxBufferLength: 10
+        });
+
+        function playStream() {
+            const url = document.getElementById('stream-url').value.trim();
+            if (url) player.loadSource(url);
+        }
+
+        function loadPreset(url) {
+            document.getElementById('stream-url').value = url;
+            player.loadSource(url);
+        }
+
+        function toggleAudio() {
+            const isMuted = player.toggleMute();
+            document.getElementById('mute-btn').innerText = isMuted ? '🔇 كتم الصوت' : '🔊 الصوت';
+        }
+
+        window.onload = () => {
+            playStream();
+        };
+    </script>
+</body>
+</html>

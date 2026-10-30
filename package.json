@@ -1,0 +1,21 @@
+{
+  "name": "saifsat-core-engine",
+  "version": "1.0.0",
+  "description": "Ultra-lightweight, hardware-accelerated universal IPTV & HLS video player with low-memory capping and smart monetization overlay.",
+  "main": "web/saifsat-player.js",
+  "scripts": {
+    "start": "npx serve web"
+  },
+  "keywords": [
+    "iptv",
+    "hls",
+    "player",
+    "wasm",
+    "hardware-acceleration",
+    "low-latency",
+    "video-stream",
+    "streaming-engine"
+  ],
+  "author": "SaifSat (Seif El Islam Bouzidi)",
+  "license": "MIT"
+}
